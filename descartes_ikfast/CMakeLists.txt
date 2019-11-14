@@ -6,6 +6,10 @@ find_package(Eigen3 REQUIRED)
 find_package(LAPACK REQUIRED)
 find_package(console_bridge REQUIRED)
 
+if (WIN32)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 if(NOT TARGET console_bridge::console_bridge)
   add_library(console_bridge::console_bridge INTERFACE IMPORTED)
   set_target_properties(console_bridge::console_bridge PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${console_bridge_INCLUDE_DIRS}")

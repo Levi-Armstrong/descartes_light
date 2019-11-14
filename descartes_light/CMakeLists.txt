@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5.0)
 project(descartes_light VERSION 0.1.0 LANGUAGES CXX)
 include(cmake/descartes_light_macros.cmake)
 
+if (WIN32)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 find_package(OpenMP REQUIRED)
 
 if(NOT TARGET OpenMP::OpenMP_CXX)

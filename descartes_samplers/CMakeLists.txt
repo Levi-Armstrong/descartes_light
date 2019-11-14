@@ -3,6 +3,10 @@ project(descartes_samplers VERSION 0.1.0 LANGUAGES CXX)
 
 find_package(descartes_light REQUIRED)
 
+if (WIN32)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 # Declare a C++ library
 add_library(${PROJECT_NAME} SHARED
   src/evaluators/distance_edge_evaluator.cpp
