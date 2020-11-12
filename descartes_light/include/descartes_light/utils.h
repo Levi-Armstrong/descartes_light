@@ -12,14 +12,6 @@ DESCARTES_IGNORE_WARNINGS_POP
 
 namespace descartes_light
 {
-/**
- * @brief This is used for passing a function to descartes that filters out invalid solutions.
- *
- * Example: This would be used to filter out solution outside of joint limits.
- *
- */
-template <typename FloatType>
-using IsValidFn = std::function<bool(const FloatType*)>;
 
 /**
  * @brief This is used for OPW Kinematics to get all solution given solution set.
