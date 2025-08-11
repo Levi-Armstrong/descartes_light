@@ -22,6 +22,7 @@
 DESCARTES_IGNORE_WARNINGS_PUSH
 #include <omp.h>
 #include <console_bridge/console.h>
+#include <boost/thread/tss.hpp>
 #include <sstream>
 #include <algorithm>
 #include <Eigen/Geometry>
@@ -80,6 +81,7 @@ BuildStatus LadderGraphSolver<FloatType>::buildImpl(
   BuildStatus status;
   graph_.resize(trajectory.size());
 
+
   // Build Vertices
   long num_waypoints = static_cast<long>(trajectory.size());
   long cnt = 0;
@@ -93,7 +95,17 @@ BuildStatus LadderGraphSolver<FloatType>::buildImpl(
     if (!samples.empty())
     {
       auto& r = graph_.getRung(static_cast<size_t>(i));
+
+#ifdef USE_THREAD_LOCAL
       thread_local std::vector<Node<FloatType>> local_nodes;
+#else
+      static boost::thread_specific_ptr<std::vector<Node<FloatType>>> local_nodes_ptr;
+      if (local_nodes_ptr.get() == nullptr)
+          local_nodes_ptr.reset(new std::vector<Node<FloatType>>());
+
+      std::vector<Node<FloatType>>& local_nodes = *local_nodes_ptr;
+#endif
+
       local_nodes.clear();
       if (local_nodes.capacity() < samples.size())
         local_nodes.reserve(samples.size());
@@ -164,7 +176,17 @@ BuildStatus LadderGraphSolver<FloatType>::buildImpl(
     for (std::size_t j = 0; j < from.nodes.size(); ++j)
     {
       auto& from_node = from.nodes[j];
+
+#ifdef USE_THREAD_LOCAL
       thread_local std::vector<Edge<FloatType>> local_edges;
+#else
+      static boost::thread_specific_ptr<std::vector<Edge<FloatType>>> local_edges_ptr;
+      if (local_edges_ptr.get() == nullptr)
+          local_edges_ptr.reset(new std::vector<Edge<FloatType>>());
+
+      std::vector<Edge<FloatType>>& local_edges = *local_edges_ptr;
+#endif
+
       local_edges.clear();
       for (std::size_t k = 0; k < to.nodes.size(); ++k)
       {

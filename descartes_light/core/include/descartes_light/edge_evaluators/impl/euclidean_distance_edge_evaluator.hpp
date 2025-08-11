@@ -21,6 +21,7 @@
 #include <descartes_light/descartes_macros.h>
 DESCARTES_IGNORE_WARNINGS_PUSH
 #include <cmath>
+#include <boost/thread/tss.hpp>
 DESCARTES_IGNORE_WARNINGS_POP
 
 #include <descartes_light/edge_evaluators/euclidean_distance_edge_evaluator.h>
@@ -37,7 +38,15 @@ std::pair<bool, FloatType> EuclideanDistanceEdgeEvaluator<FloatType>::evaluate(c
                                                                                const State<FloatType>& end) const
 {
   // Leverage `thread_local` declaration to reduce number of allocations
+#ifdef USE_THREAD_LOCAL
   thread_local Eigen::Matrix<FloatType, Eigen::Dynamic, 1> diff;
+#else
+  static boost::thread_specific_ptr<Eigen::Matrix<FloatType, Eigen::Dynamic, 1>> diff_ptr;
+  if (diff_ptr.get() == nullptr)
+      diff_ptr.reset(new Eigen::Matrix<FloatType, Eigen::Dynamic, 1>());
+
+  Eigen::Matrix<FloatType, Eigen::Dynamic, 1>& diff = *diff_ptr;
+#endif
 
   // Allocates only if size changes (once per thread typically)
   if (diff.size() != end.values.size())
