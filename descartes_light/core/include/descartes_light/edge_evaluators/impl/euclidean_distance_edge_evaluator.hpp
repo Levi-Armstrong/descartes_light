@@ -43,7 +43,7 @@ std::pair<bool, FloatType> EuclideanDistanceEdgeEvaluator<FloatType>::evaluate(c
 #else
   static boost::thread_specific_ptr<Eigen::Matrix<FloatType, Eigen::Dynamic, 1>> diff_ptr;
   if (diff_ptr.get() == nullptr)
-      diff_ptr.reset(new Eigen::Matrix<FloatType, Eigen::Dynamic, 1>());
+    diff_ptr.reset(new Eigen::Matrix<FloatType, Eigen::Dynamic, 1>());
 
   Eigen::Matrix<FloatType, Eigen::Dynamic, 1>& diff = *diff_ptr;
 #endif
